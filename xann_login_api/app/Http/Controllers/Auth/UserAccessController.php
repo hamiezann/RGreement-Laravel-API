@@ -16,6 +16,7 @@ class UserAccessController extends Controller
             'email'=>'required|string|email|unique:users',
             'password'=>'required|min:8',
             'role' => 'required|in:renter,landlord',
+            
           
         ]);
         $user = User::create([
@@ -32,7 +33,9 @@ class UserAccessController extends Controller
     public function login(Request $request){
         $loginUserData = $request->validate([
             'email'=>'required|string|email',
-            'password'=>'required|min:8'
+            'password'=>'required|min:8',
+          //  'role' => 'required|in:renter,landlord',
+
         ]);
         $user = User::where('email',$loginUserData['email'])->first();
         if(!$user || !Hash::check($loginUserData['password'],$user->password)){
@@ -43,7 +46,10 @@ class UserAccessController extends Controller
         $token = $user->createToken($user->name.'-AuthToken', ['*'], Carbon::now()->addHour(1))->plainTextToken;
         return response()->json([
             'access_token' => $token,
+            'role' => $user->role,
+            'userId' => $user->id,
             'message' => 'You are logged in',
+            
         ]);
     }
     
