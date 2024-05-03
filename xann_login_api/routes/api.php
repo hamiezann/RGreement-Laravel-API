@@ -29,6 +29,6 @@ Route::post('logout',[UserAccessController::class,'logout'])
 
 Route::post('house-details',[RentHouse::class,'store']);
 Route::get('/list/{userId}/rent-houses', [RentHouse::class, 'getRentHousesByUser']);
-Route::delete('/rent-houses/{id}', [RentHouse::class, 'destroy']);
+Route::delete('/delete-rent-houses/{id}', [RentHouse::class, 'destroy']);
 Route::put('/update-rent-house/{id}', [RentHouse::class, 'update']);
 
