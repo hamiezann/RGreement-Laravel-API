@@ -16,8 +16,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); // Use unsignedBigInteger to match the primary key datatype
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('latitude');
-            $table->unsignedBigInteger('longitude');
+            // $table->unsignedBigInteger('latitude');
+            // $table->unsignedBigInteger('longitude');
+            $table->decimal('latitude', 10, 8); // Precision of 10 and scale of 8
+            $table->decimal('longitude', 11, 8); // Precision of 11 and scale of 8
             $table->string('uni_identifier');
             $table->string('prefered_occupants');
             $table->string('type_of_house');
