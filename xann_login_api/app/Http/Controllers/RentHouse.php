@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\House_Details;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class RentHouse extends Controller
 {
@@ -55,6 +56,19 @@ class RentHouse extends Controller
                 return response()->json(['error' => $e->getMessage()], 500);
             }
         }
+        public function getRentHousesById($houseId)
+        {
+            try {
+                // Query the database to retrieve rent houses associated with the user ID
+                $rentHouseDetail = House_Details::where('id', $houseId)->get();
+    
+                // Return the rent houses as a JSON response
+                return response()->json($rentHouseDetail);
+            } catch (\Exception $e) {
+                // Handle any exceptions
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
 
         public function destroy($id)
     {
@@ -87,4 +101,16 @@ class RentHouse extends Controller
         return response()->json(['message' => 'Rent house updated successfully'], 200);
     }
     
+    public function list(Request $request) {
+
+        try{
+            $rentHouse = House_Details::all();
+            return response()->json($rentHouse);
+        }
+        catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
 }

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class UserAccessController extends Controller
 {
@@ -19,12 +20,28 @@ class UserAccessController extends Controller
             
           
         ]);
-        $user = User::create([
-            'name' => $registerUserData['name'],
-            'email' => $registerUserData['email'],
-            'password' => Hash::make($registerUserData['password']),
-            'role' => $registerUserData['role'],
-        ]);
+        // $user = User::create([
+        //     'name' => $registerUserData['name'],
+        //     'email' => $registerUserData['email'],
+        //     'password' => Hash::make($registerUserData['password']),
+        //     'role' => $registerUserData['role'],
+        // ]);
+        try {
+            $user = User::create([
+                'name' => $registerUserData['name'],
+                'email' => $registerUserData['email'],
+                'password' => Hash::make($registerUserData['password']),
+                'role' => $registerUserData['role'],
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception
+            Log::error('Error creating user: ' . $e->getMessage());
+            // Return an error response
+            return response()->json([
+                'message' => 'Error creating user',
+            ], 500);
+        }
+        
         return response()->json([
             'message' => 'User Created ',
         ]);
