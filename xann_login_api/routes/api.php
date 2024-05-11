@@ -37,6 +37,8 @@ Route::get('/nearby-house-list', [RentHouse::class, 'list']);
 
 //  Renter
 Route::get('/house-details/{id}', [RentHouse::class, 'getRentHousesById']);
+Route::get('/find-house/{houseId}', [RentHouse::class, 'findHouseById']);
+Route::post('/compare-identifier', [RentHouse::class, 'compareIdentifier']);
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);
@@ -44,6 +46,10 @@ Route::post('/messages', [MessageController::class, 'store']);
 Route::get('/messages/{id}', [MessageController::class, 'show']);
 Route::put('/messages/{id}', [MessageController::class, 'update']);
 Route::delete('/messages/{id}', [MessageController::class, 'destroy']);
+
+Route::get('/conversations', [MessageController::class, 'conversation_list']);
+// Route::get('/conversations', [MessageController::class, 'conversation_count']);
+Route::get('/conversations/{senderId}/{recipientId}', [MessageController::class, 'conversation_show']);
 
 
 

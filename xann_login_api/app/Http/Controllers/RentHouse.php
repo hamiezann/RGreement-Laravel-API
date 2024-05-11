@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\House_Details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
-
+use Illuminate\Support\Facades\DB;
 class RentHouse extends Controller
 {
     public function store(Request $request)
@@ -70,6 +70,20 @@ class RentHouse extends Controller
             }
         }
 
+        public function findHouseById( $houseId)
+        {
+            try {
+                // Query the database to retrieve rent houses associated with the user ID
+                $rentHouseDetail = House_Details::where('id', $houseId)->get();
+    
+                // Return the rent houses as a JSON response
+                return response()->json($rentHouseDetail);
+            } catch (\Exception $e) {
+                // Handle any exceptions
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }
+
         public function destroy($id)
     {
         try {
@@ -113,4 +127,39 @@ class RentHouse extends Controller
         }
 
     }
+
+
+    public function compareIdentifier(Request $request)
+    {
+      try {
+        // Get the university identifier and house ID from the request
+        $uniIdentifier = $request->input('uniIdentifier');
+        $houseId = $request->input('houseId');
+    
+        // Log retrieved values
+        error_log("Received uniIdentifier: $uniIdentifier, houseId: $houseId");
+    
+        // Check if the university identifier belongs to the specified house ID
+        $houseDetail = DB::table('house_details')
+          ->where('uni_identifier', $uniIdentifier)
+          ->where('id', $houseId)
+          ->first();
+    
+        // If the house detail exists, return a success response
+        if ($houseDetail) {
+        //  return response()->json(['isMatch' => true]);
+          return response()->json(['message' => 'Applied Succesfully!']);
+          
+          
+        } else {
+          // Log missing house details
+          error_log("University identifier not found for house ID $houseId");
+          return response()->json(['error' => 'University identifier does not match the specified house ID'], 400);
+        }
+      } catch (\Exception $e) {
+        // Handle any exceptions
+        return response()->json(['error' => $e->getMessage()], 500);
+      }
+    }
+    
 }
