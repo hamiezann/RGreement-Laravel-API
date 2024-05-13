@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserAccessController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RentHouse;
+use App\Http\Controllers\TenantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,11 +35,17 @@ Route::get('/list/{userId}/rent-houses', [RentHouse::class, 'getRentHousesByUser
 Route::delete('/delete-rent-houses/{id}', [RentHouse::class, 'destroy']);
 Route::put('/update-rent-house/{id}', [RentHouse::class, 'update']);
 Route::get('/nearby-house-list', [RentHouse::class, 'list']);
+Route::get('/tenants', [TenantController::class, 'index']);
+Route::put('/tenants/{id}', [TenantController::class, 'update']);
+
 
 //  Renter
 Route::get('/house-details/{id}', [RentHouse::class, 'getRentHousesById']);
 Route::get('/find-house/{houseId}', [RentHouse::class, 'findHouseById']);
 Route::post('/compare-identifier', [RentHouse::class, 'compareIdentifier']);
+Route::post('/apply-rent-house', [TenantController::class, 'store']);
+Route::get('/applied-houses/{id}', [TenantController::class, 'getAppliedHouses']);
+
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);
