@@ -45,7 +45,7 @@ Route::get('/find-house/{houseId}', [RentHouse::class, 'findHouseById']);
 Route::post('/compare-identifier', [RentHouse::class, 'compareIdentifier']);
 Route::post('/apply-rent-house', [TenantController::class, 'store']);
 Route::get('/applied-houses/{id}', [TenantController::class, 'getAppliedHouses']);
-
+Route::get('/get-UniIdentifier/{houseId}', [RentHouse::class, 'getUniIdentifier']) ;
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);

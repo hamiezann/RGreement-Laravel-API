@@ -161,5 +161,12 @@ class RentHouse extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
       }
     }
+    public function getUniIdentifier($houseId)
+    {
+        $house = House_Details::findOrFail($houseId);
+
+        // Assuming 'uni_identifier' is a field in your House_Details model
+        return response()->json(['uni_identifier' => $house->uni_identifier], 200);
+    }
     
 }
