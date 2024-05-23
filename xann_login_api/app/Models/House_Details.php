@@ -13,6 +13,7 @@ class House_Details extends Model
     
     protected $fillable = [
         'user_id',
+        'rent_address',
         'latitude',
         'longitude',
         'uni_identifier',
@@ -21,7 +22,16 @@ class House_Details extends Model
         'description',
         'rent_fee',
         'number_of_rooms',
+        'amenities',
+        'num_bedrooms',
+        'num_toilets',
+        'available',
     ];
+
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'house_detail_id');
+    }
 
     protected $table = 'house_details';
 

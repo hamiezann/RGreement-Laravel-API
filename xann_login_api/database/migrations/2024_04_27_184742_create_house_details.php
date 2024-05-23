@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             // $table->unsignedBigInteger('latitude');
             // $table->unsignedBigInteger('longitude');
+            $table->string('rent_address');
             $table->decimal('latitude', 10, 8); // Precision of 10 and scale of 8
             $table->decimal('longitude', 11, 8); // Precision of 11 and scale of 8
             $table->string('uni_identifier');
@@ -26,6 +27,18 @@ return new class extends Migration
             $table->text('description');
             $table->float('rent_fee');
             $table->tinyInteger('number_of_rooms');
+            $table->string('amenities');
+            $table->string('num_bedrooms');
+            $table->string('num_toilets');
+
+            $table->timestamps();
+        });
+
+        Schema::create('images', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('house_detail_id');
+            $table->foreign('house_detail_id')->references('id')->on('house_details')->onDelete('cascade');
+            $table->string('path');
             $table->timestamps();
         });
     }
@@ -35,6 +48,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('images');
         Schema::dropIfExists('house_details');
     }
 };
