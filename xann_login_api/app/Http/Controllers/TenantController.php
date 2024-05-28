@@ -102,6 +102,32 @@ class TenantController extends Controller
         }
     }
     
+    // public function findByHouseId(Request $request, $houseId) 
+    // {
+    //     $update_tenant_contract = Tenant::where('house_id',$houseId);
+
+    //     $update_tenant_contract ->fill($request->all())->save();
+
+    //     return response()->json(['message' => 'Tenant contract signing status updated succesfully'], 200);
+    // }
+
+    public function findByHouseId(Request $request, $houseId) 
+{
+    // Find the tenant contract by house ID
+    $update_tenant_contract = Tenant::where('house_id', $houseId)->first();
+
+    // Check if the tenant contract exists
+    if (!$update_tenant_contract) {
+        return response()->json(['message' => 'Tenant contract not found'], 404);
+    }
+
+    // Fill the contract with the new data and save it
+    $update_tenant_contract->fill($request->all());
+    $update_tenant_contract->save();
+
+    return response()->json(['message' => 'Tenant contract signing status updated successfully'], 200);
+}
+
 
 
     
