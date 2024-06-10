@@ -34,13 +34,24 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('images', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('house_detail_id');
-            $table->foreign('house_detail_id')->references('id')->on('house_details')->onDelete('cascade');
-            $table->string('path');
-            $table->timestamps();
-        });
+        // Schema::create('images', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedBigInteger('house_detail_id');
+        //     $table->foreign('house_detail_id')->references('id')->on('house_details')->onDelete('cascade');
+        //     $table->string('path');
+        //     $table->timestamps();
+        // });
+
+    
+            Schema::create('images', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('imageable_id');
+                $table->string('imageable_type');
+                $table->string('path');
+                $table->timestamps();
+            });
+        
+    
     }
 
     /**

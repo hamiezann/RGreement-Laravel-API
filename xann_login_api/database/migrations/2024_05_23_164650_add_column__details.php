@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::table('house_details', function (Blueprint $table) {
             $table->boolean('available')->default(true); // Add the 'available' column with a default value of true
+            $table->string('contract_status');
         });
     }
 
@@ -26,6 +27,7 @@ return new class extends Migration
     {
         Schema::table('house_details', function (Blueprint $table) {
             $table->dropColumn('available');
+            $table->dropColumn('contract_status');
         });
     }
 };

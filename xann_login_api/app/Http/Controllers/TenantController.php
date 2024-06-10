@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\House_Details;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
@@ -47,13 +48,13 @@ class TenantController extends Controller
     //         return response()->json(['error' => $e->getMessage()], 500);
     //     }
     // }
-    public function index(Request $request)
-{
+    public function index(Request $request) {
     try {
         $userId = $request->input('user_id'); // Get the user ID from the request
 
         // Fetch tenants with pending status where the house owner's user ID matches the provided user ID
-        $pendingTenants = Tenant::with('user')
+        // $pendingTenants = Tenant::with('user')
+        $pendingTenants = Tenant::with(['user', 'house'])
             ->whereHas('house', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
@@ -61,7 +62,7 @@ class TenantController extends Controller
             ->get();
 
         // Fetch tenants with verified status where the house owner's user ID matches the provided user ID
-        $verifiedTenants = Tenant::with('user')
+        $verifiedTenants = Tenant::with(['user', 'house'])
             ->whereHas('house', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
@@ -115,15 +116,22 @@ class TenantController extends Controller
 {
     // Find the tenant contract by house ID
     $update_tenant_contract = Tenant::where('house_id', $houseId)->first();
+    $update_contract_status = House_Details::where('id', $houseId )->first();
 
     // Check if the tenant contract exists
     if (!$update_tenant_contract) {
         return response()->json(['message' => 'Tenant contract not found'], 404);
     }
+    if (!$update_contract_status) {
+        return response()->json(['message' => 'No contract was found'], 404);
+    }
 
     // Fill the contract with the new data and save it
     $update_tenant_contract->fill($request->all());
     $update_tenant_contract->save();
+
+    $update_contract_status->fill($request->all());
+    $update_contract_status->save();
 
     return response()->json(['message' => 'Tenant contract signing status updated successfully'], 200);
 }

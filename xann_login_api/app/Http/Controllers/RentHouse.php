@@ -27,6 +27,7 @@ class RentHouse extends Controller
             'amenities' => 'required|string',
             'num_bedrooms' => 'required|integer',
             'num_toilets' => 'required|integer',
+            'contract_status' => 'required',
         ]);
     
         try {
@@ -45,6 +46,7 @@ class RentHouse extends Controller
             $houseDetail->amenities = $request->amenities;
             $houseDetail->num_bedrooms = $request->num_bedrooms;
             $houseDetail->num_toilets = $request->num_toilets;
+            $houseDetail->contract_status = $request->contract_status;
     
             // Save the house detail
             $houseDetail->save();
@@ -58,7 +60,9 @@ class RentHouse extends Controller
     
                 // Save image path to database
                 Image::create([
-                    'house_detail_id' => $houseDetail->id,
+                    
+                    'imageable_id' => $houseDetail->id,
+                    'imageable_type' => House_Details::class,
                     'path' => $path,
                 ]);
             }
@@ -119,22 +123,46 @@ class RentHouse extends Controller
             }
         }
 
-        public function destroy($id)
-    {
-        try {
-            // Find the rent house by ID
-            $rentHouse = House_Details::findOrFail($id);
+    //     public function destroy($id)
+    // {
+    //     try {
+    //         // Find the rent house by ID
+    //         $rentHouse = House_Details::findOrFail($id);
 
-            // Delete the rent house
-            $rentHouse->delete();
+    //         // Delete the rent house
+    //         $rentHouse->delete();
 
-            // Return a success response
-            return response()->json(['message' => 'Rent house deleted successfully'], 204);
-        } catch (\Exception $e) {
-            // Return an error response if something goes wrong
-            return response()->json(['message' => 'Failed to delete rent house', 'error' => $e->getMessage()], 500);
+    //         // Return a success response
+    //         return response()->json(['message' => 'Rent house deleted successfully'], 204);
+    //     } catch (\Exception $e) {
+    //         // Return an error response if something goes wrong
+    //         return response()->json(['message' => 'Failed to delete rent house', 'error' => $e->getMessage()], 500);
+    //     }
+    // }
+
+    public function destroy($id)
+{
+    try {
+        // Find the rent house by ID
+        $rentHouse = House_Details::findOrFail($id);
+
+        // Check the contract status
+        if ($rentHouse->contract_status === 'Active') {
+            // Return a response indicating that active contracts cannot be deleted
+            return response()->json(['message' => 'Active contracts cannot be deleted'], 400);
         }
+
+        // Delete the rent house if the status is 'Inactive' or 'Ended'
+        $rentHouse->delete();
+
+        // Return a success response
+        return response()->json(['message' => 'Rent house deleted successfully'], 204);
+    } catch (\Exception $e) {
+        // Return an error response if something goes wrong
+        return response()->json(['message' => 'Failed to delete rent house', 'error' => $e->getMessage()], 500);
     }
+}
+
 
     public function update(Request $request, $id)
     {
@@ -204,6 +232,7 @@ class RentHouse extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
       }
     }
+    
     public function getUniIdentifier($houseId)
     {
         $house = House_Details::findOrFail($houseId);

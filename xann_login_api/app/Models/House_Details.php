@@ -26,13 +26,17 @@ class House_Details extends Model
         'num_bedrooms',
         'num_toilets',
         'available',
+        'contract_status',
     ];
 
+    // public function images()
+    // {
+    //     return $this->hasMany(Image::class, 'house_detail_id');
+    // }
     public function images()
     {
-        return $this->hasMany(Image::class, 'house_detail_id');
+        return $this->morphMany(Image::class, 'imageable');
     }
-
     protected $table = 'house_details';
 
 
