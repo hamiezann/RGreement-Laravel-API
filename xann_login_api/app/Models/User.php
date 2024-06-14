@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class User extends Authenticatable
 {
@@ -24,6 +22,14 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'biography',
+        'career',
+        'address',
+        'phone_number',
+        'verified_member',
+        'profile_pic',
+        'age',
+        'income',
     ];
 
     /**
@@ -36,11 +42,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // public function tokens()
-    // {
-    //     return $this->hasMany(PersonalAccessToken::class);  // Use PersonalAccessToken (Sanctum model)
-    // }
-
     /**
      * The attributes that should be cast.
      *
@@ -48,21 +49,16 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-       // 'role' => 'int',
+        'verified_member' => 'boolean',
+        'age' => 'integer',
+        'income' => 'decimal:2',
     ];
 
-    // protected function role(): HasAttributes
-    // {
-    //     return new HasAttributes(
-    //         get: function ($value) {
-    //             $types = ["renter", "landlord"];
-    //             return $types[$value - 1] ?? null;
-    //         },
-    //         set: function ($value) {
-    //             $types = ["renter", "landlord"];
-    //             return array_search($value, $types) + 1;
-    //         }
-    //     );
-    // }
+    /**
+     * Get the user's profile image.
+     */
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
 }

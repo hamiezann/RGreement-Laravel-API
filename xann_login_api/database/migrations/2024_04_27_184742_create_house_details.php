@@ -27,7 +27,7 @@ return new class extends Migration
             $table->text('description');
             $table->float('rent_fee');
             $table->tinyInteger('number_of_rooms');
-            $table->string('amenities');
+            $table->text('amenities');
             $table->string('num_bedrooms');
             $table->string('num_toilets');
 
@@ -49,7 +49,10 @@ return new class extends Migration
                 $table->string('imageable_type');
                 $table->string('path');
                 $table->timestamps();
+                
+                $table->index(['imageable_id', 'imageable_type']);
             });
+            
         
     
     }

@@ -17,12 +17,20 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-          //  $table->enum('role', ['renter', 'landlord'])->default('renter');
             $table->string('role');
+            $table->text('biography')->nullable();
+            $table->string('career')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->boolean('verified_member')->default(false);
+            $table->string('profile_pic')->nullable();
+            $table->integer('age')->nullable();
+            $table->decimal('income', 15, 2)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.

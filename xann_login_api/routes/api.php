@@ -47,6 +47,10 @@ Route::post('/apply-rent-house', [TenantController::class, 'store']);
 Route::get('/applied-houses/{id}', [TenantController::class, 'getAppliedHouses']);
 Route::get('/get-UniIdentifier/{houseId}', [RentHouse::class, 'getUniIdentifier']) ;
 Route::put('/sign-now/{houseId}', [TenantController::class, 'findByHouseId']);
+Route::post('/users/{userId}/edit-profile', [UserAccessController::class, 'updateProfile']);
+Route::get('/users/{userId}/profile', [UserAccessController::class, 'getProfile']);
+Route::post('/users/{userId}/change-password', [UserAccessController::class, 'changePassword']);
+
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);
