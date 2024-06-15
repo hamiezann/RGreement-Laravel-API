@@ -94,7 +94,8 @@ class TenantController extends Controller
     {
         try {
             $appliedHouses = Tenant::where('tenant_id', $userId)
-                ->whereIn('tenant_status', ['pending', 'approved'])
+                ->whereIn('tenant_status', ['Pending', 'Approved'])
+                ->with(['house.owner']) // Load the house and its owner
                 ->get();
     
             return response()->json($appliedHouses, 200);

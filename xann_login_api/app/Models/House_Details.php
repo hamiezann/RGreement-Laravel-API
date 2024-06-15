@@ -45,4 +45,9 @@ class House_Details extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
