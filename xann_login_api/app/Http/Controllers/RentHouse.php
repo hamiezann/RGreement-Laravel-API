@@ -7,6 +7,7 @@ use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class RentHouse extends Controller
 {
     public function store(Request $request)
@@ -81,8 +82,12 @@ class RentHouse extends Controller
         {
             try {
                 // Query the database to retrieve rent houses associated with the user ID
-                $rentHouses = House_Details::where('user_id', $userId)->get();
-    
+                $rentHouses = House_Details::where('user_id', $userId)->with('images')->get();
+                $rentHouses->each(function ($house) {
+                    $house->images->each(function ($image) {
+                        $image->url = asset('storage/' .$image->path);
+                    });
+                });
                 // Return the rent houses as a JSON response
                 return response()->json($rentHouses);
             } catch (\Exception $e) {
@@ -90,25 +95,54 @@ class RentHouse extends Controller
                 return response()->json(['error' => $e->getMessage()], 500);
             }
         }
+        // public function getRentHousesById($houseId)
+        // {
+        //     try {
+        //         // Query the database to retrieve rent houses associated with the user ID
+        //         $rentHouseDetail = House_Details::where('id', $houseId)->with('images')->get();
+        //         $rentHouseDetail->each(function ($house) {
+        //             $house->images->each(function ($image) {
+        //                 $image->url = asset('storage/' .$image->path);
+        //             });
+        //         });
+        //         $rentHouseDetail->user_id;
+        //         // Return the rent houses as a JSON response
+        //         return response()->json($rentHouseDetail);
+        //     } catch (\Exception $e) {
+        //         // Handle any exceptions
+        //         return response()->json(['error' => $e->getMessage()], 500);
+        //     }
+    
+        // }
         public function getRentHousesById($houseId)
         {
             try {
-                // Query the database to retrieve rent houses associated with the user ID
+                // Query the database to retrieve rent houses associated with the house ID
                 $rentHouseDetail = House_Details::where('id', $houseId)->with('images')->get();
+                
+                // Ensure the house detail is found
+                if ($rentHouseDetail->isEmpty()) {
+                    return response()->json(['error' => 'House details not found'], 404);
+                }
+        
+                // Format image URLs
                 $rentHouseDetail->each(function ($house) {
                     $house->images->each(function ($image) {
                         $image->url = asset('storage/' .$image->path);
                     });
                 });
+        
                 // Return the rent houses as a JSON response
                 return response()->json($rentHouseDetail);
             } catch (\Exception $e) {
+                // Log the exception message
+                Log::error('Error fetching house details: ' . $e->getMessage());
+                
                 // Handle any exceptions
-                return response()->json(['error' => $e->getMessage()], 500);
+                return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
             }
-    
         }
-
+        
         public function findHouseById( $houseId)
         {
             try {

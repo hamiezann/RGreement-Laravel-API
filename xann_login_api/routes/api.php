@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\UserAccessController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RentHouse;
 use App\Http\Controllers\TenantController;
-
+use App\Http\Controllers\IssueController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,7 +37,8 @@ Route::put('/update-rent-house/{id}', [RentHouse::class, 'update']);
 Route::get('/nearby-house-list', [RentHouse::class, 'list']);
 Route::get('/tenants', [TenantController::class, 'index']);
 Route::put('/tenants/{id}', [TenantController::class, 'update']);
-
+Route::post('issues/create', [IssueController::class, 'store']);
+Route::get('/tenant-by-house/{houseId}', [TenantController::class, 'getTenantByHouseId']);
 
 //  Renter
 Route::get('/house-details/{id}', [RentHouse::class, 'getRentHousesById']);
@@ -50,7 +51,10 @@ Route::put('/sign-now/{houseId}', [TenantController::class, 'findByHouseId']);
 Route::post('/users/{userId}/edit-profile', [UserAccessController::class, 'updateProfile']);
 Route::get('/users/{userId}/profile', [UserAccessController::class, 'getProfile']);
 Route::post('/users/{userId}/change-password', [UserAccessController::class, 'changePassword']);
-
+Route::get('houses/{house_id}/issues', [IssueController::class, 'viewByHouseId']);
+Route::put('issues/{id}/status', [IssueController::class, 'updateStatus']);
+// Route::patch('issues/{id}/re', [IssueController::class, 'approveDepositRelease']);
+// Route::patch('issues/{id}/status', [IssueController::class, 'rejectDepositRelease']);
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);

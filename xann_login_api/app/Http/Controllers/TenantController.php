@@ -6,6 +6,7 @@ use App\Models\House_Details;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log;
 
 class TenantController extends Controller
 {
@@ -139,7 +140,27 @@ class TenantController extends Controller
 
 
 
-    
+public function getTenantByHouseId($houseId)
+{
+    try {
+        // Fetch the tenant details based on house ID
+        $tenant = Tenant::where('house_id', $houseId)->first();
+
+        // Check if tenant exists
+        if (!$tenant) {
+            return response()->json(['error' => 'Tenant not found for this house ID'], 404);
+        }
+
+        // Return the tenant ID
+        return response()->json(['tenant_id' => $tenant->tenant_id]);
+    } catch (\Exception $e) {
+        // Log the exception message
+        Log::error('Error fetching tenant details: ' . $e->getMessage());
+
+        // Handle any exceptions
+        return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
+    }
+}
     
 
 }
