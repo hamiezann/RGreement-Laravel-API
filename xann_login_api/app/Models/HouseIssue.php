@@ -22,6 +22,7 @@ class HouseIssue extends Model
         'image',
         'amount_requested',
         'status',
+        'issue_id'
     ];
 
     /**

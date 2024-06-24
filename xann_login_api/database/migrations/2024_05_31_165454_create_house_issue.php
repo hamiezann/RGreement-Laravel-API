@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->decimal('amount_requested', 15, 2)->nullable();
             $table->string('status')->default('pending');
+            $table->unsignedBigInteger('issue_id');
             $table->timestamps();
         });
     }

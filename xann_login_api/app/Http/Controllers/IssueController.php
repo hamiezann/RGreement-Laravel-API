@@ -21,6 +21,7 @@ class IssueController extends Controller
             'image' => 'nullable|image|max:2048',
             'amount_requested' => 'nullable|numeric',
             'status' => 'required|string|in:pending,accepted,rejected',
+            'issue_id' => 'required|numeric',
         ]);
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('images', 'public');
@@ -31,18 +32,6 @@ class IssueController extends Controller
         return response()->json($issue, 201);
     }
 
-    // public function viewByHouseId($house_id)
-    // {
-    //     $issues = HouseIssue::with(['images', 'landlord', 'renter', 'house'])
-    //                         ->where('house_id', $house_id)
-    //                         ->get();
-    //                         $issues->each(function ($house) {
-    //                             $house->images->each(function ($image) {
-    //                                 $image->url = asset('storage/' .$image->path);
-    //                             });
-    //                         });
-    //     return response()->json($issues);
-    // }
 
     public function viewByHouseId($house_id)
 {
@@ -80,38 +69,37 @@ class IssueController extends Controller
         return response()->json($issue);
     }
 
-    public function approveDepositRelease(Request $request, $id)
-{
-    $validated = $request->validate([
-        'status' => 'required|string|in:accepted',
-    ]);
+    public function updateStatusByIssueId(Request $request, $issue_id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:accepted,rejected',
+        ]);
+    
+        // Update status for all issues with the same issue_id
+        $issues = HouseIssue::where('issue_id', $issue_id)->update(['status' => $validated['status']]);
+    
+        return response()->json(['message' => 'Status updated successfully', 'affected_rows' => $issues]);
+    }
 
-    // Update status in your database
-    $issue = HouseIssue::findOrFail($id);
-    $issue->update($validated);
+    public function viewByIssueId($issue_id)
+    {
+        $issue = HouseIssue::where('issue_id', $issue_id)->with('images')->first();
+    
+        if (!$issue) {
+            return response()->json(['message' => 'Issue not found'], 404);
+        }
+    
+        // Process images if necessary
+        if ($issue->images) {
+            $issue->images->each(function ($image) {
+                $image->url = asset('storage/' . $image->path);
+            });
+        }
+    
+        return response()->json($issue);
+    }
+    
 
-    // Perform contract interaction to approve deposit release
-    // Example: interact with Ethereum contract method approveDepositRelease
-    // Ensure to pass necessary parameters like contractId, request index/id, etc.
-
-    return response()->json($issue);
-}
-
-public function rejectDepositRelease(Request $request, $id)
-{
-    $validated = $request->validate([
-        'status' => 'required|string|in:rejected',
-    ]);
-
-    // Update status in your database
-    $issue = HouseIssue::findOrFail($id);
-    $issue->update($validated);
-
-    // Perform contract interaction to reject deposit release
-    // Example: interact with Ethereum contract method rejectDepositRelease
-    // Ensure to pass necessary parameters like contractId, request index/id, etc.
-
-    return response()->json($issue);
-}
+    
 
 }

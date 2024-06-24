@@ -53,8 +53,9 @@ Route::get('/users/{userId}/profile', [UserAccessController::class, 'getProfile'
 Route::post('/users/{userId}/change-password', [UserAccessController::class, 'changePassword']);
 Route::get('houses/{house_id}/issues', [IssueController::class, 'viewByHouseId']);
 Route::put('issues/{id}/status', [IssueController::class, 'updateStatus']);
-// Route::patch('issues/{id}/re', [IssueController::class, 'approveDepositRelease']);
-// Route::patch('issues/{id}/status', [IssueController::class, 'rejectDepositRelease']);
+Route::put('/issues/update-status/{issue_id}', [IssueController::class, 'updateStatusByIssueId']);
+Route::get('/issues/{issue_id}', [IssueController::class, 'viewByIssueId']);
+
 
 //  Message Pathway
 Route::get('/messages', [MessageController::class, 'index']);
