@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use App\Models\User;
+// use App\Events\MessageSent;
 
 class MessageController extends Controller
 {
@@ -49,9 +50,9 @@ class MessageController extends Controller
     $data['updated_at'] = Carbon::now();
 
     $message = Message::create($data);
-     //   $message = Message::create($request->all());
+    // event(new MessageSent($message));
         return response()->json($message, 201);
-    }
+     }
 
     public function show($id)
     {
@@ -84,22 +85,52 @@ class MessageController extends Controller
 
     // COnversation listed
 
-    // public function conversation_list(Request $request)
-    // {
-    //   $userId = $request->input('user_id');
+
+//     public function conversation_list(Request $request)
+// {
+//     $userId = $request->input('user_id');
     
-    //   // Retrieve distinct sender_ids where the user is the recipient
-    //   $senderIds = Message::where('recipient_id', $userId)->distinct()->pluck('sender_id');
+//     // Retrieve distinct sender_ids where the user is the recipient
+//     $senderIds = Message::where('recipient_id', $userId)->distinct()->pluck('sender_id');
     
-    //   // Retrieve distinct recipient_ids where the user is the sender
-    //   $recipientIds = Message::where('sender_id', $userId)->distinct()->pluck('recipient_id');
+//     // Retrieve distinct recipient_ids where the user is the sender
+//     $recipientIds = Message::where('sender_id', $userId)->distinct()->pluck('recipient_id');
     
-    //   // Combine sender_ids and recipient_ids and remove duplicates
-    //   $oppositeIds = $senderIds->merge($recipientIds)->unique();
+//     // Combine sender_ids and recipient_ids and remove duplicates
+//     $oppositeIds = $senderIds->merge($recipientIds)->unique();
     
-    //   return response()->json($oppositeIds);
-    // }
-    public function conversation_list(Request $request)
+//     // Fetch names associated with oppositeIds
+//     $oppositeUsers = User::whereIn('id', $oppositeIds)->pluck('name', 'id');
+
+//     // Fetch the latest message snippet for each opposite ID
+//     $latestMessages = [];
+//     foreach ($oppositeIds as $oppositeId) {
+//         $latestMessage = Message::where(function($query) use ($userId, $oppositeId) {
+//             $query->where('sender_id', $userId)->where('recipient_id', $oppositeId);
+//         })->orWhere(function($query) use ($userId, $oppositeId) {
+//             $query->where('sender_id', $oppositeId)->where('recipient_id', $userId);
+//         })->latest()->first();
+
+//         // If there's a message, extract the snippet, otherwise set to null
+//         $snippet = $latestMessage ? $latestMessage->content : null;
+
+//         $latestMessages[$oppositeId] = $snippet;
+//     }
+
+//     // Combine user names and latest messages into a single array
+//     $conversations = [];
+//     foreach ($oppositeUsers as $oppositeId => $name) {
+//         $conversations[] = [
+//             'id' => $oppositeId,
+//             'name' => $name,
+//             'latest_message' => $latestMessages[$oppositeId]
+//         ];
+//     }
+
+//     return response()->json($conversations);
+// }
+
+public function conversation_list(Request $request)
 {
     $userId = $request->input('user_id');
     
@@ -112,36 +143,40 @@ class MessageController extends Controller
     // Combine sender_ids and recipient_ids and remove duplicates
     $oppositeIds = $senderIds->merge($recipientIds)->unique();
     
-    // Fetch names associated with oppositeIds
-    $oppositeUsers = User::whereIn('id', $oppositeIds)->pluck('name', 'id');
+    // Fetch names and profile pictures associated with oppositeIds
+    $oppositeUsers = User::whereIn('id', $oppositeIds)->get(['id', 'name', 'profile_pic']);
 
     // Fetch the latest message snippet for each opposite ID
     $latestMessages = [];
-    foreach ($oppositeIds as $oppositeId) {
-        $latestMessage = Message::where(function($query) use ($userId, $oppositeId) {
-            $query->where('sender_id', $userId)->where('recipient_id', $oppositeId);
-        })->orWhere(function($query) use ($userId, $oppositeId) {
-            $query->where('sender_id', $oppositeId)->where('recipient_id', $userId);
+    foreach ($oppositeUsers as $user) {
+        $latestMessage = Message::where(function($query) use ($userId, $user) {
+            $query->where('sender_id', $userId)->where('recipient_id', $user->id);
+        })->orWhere(function($query) use ($userId, $user) {
+            $query->where('sender_id', $user->id)->where('recipient_id', $userId);
         })->latest()->first();
 
         // If there's a message, extract the snippet, otherwise set to null
         $snippet = $latestMessage ? $latestMessage->content : null;
 
-        $latestMessages[$oppositeId] = $snippet;
+        $latestMessages[$user->id] = $snippet;
     }
 
-    // Combine user names and latest messages into a single array
+
+    // Combine user names, profile pictures, and latest messages into a single array
     $conversations = [];
-    foreach ($oppositeUsers as $oppositeId => $name) {
+    foreach ($oppositeUsers as $user) {
         $conversations[] = [
-            'id' => $oppositeId,
-            'name' => $name,
-            'latest_message' => $latestMessages[$oppositeId]
+            'id' => $user->id,
+            'name' => $user->name,
+            // 'profile_pic' => $user->profile_pic ? $user->profile_pic->url : null,
+            // 'profile_pic' => $user->profile_pic ,
+            'latest_message' => $latestMessages[$user->id]
         ];
     }
 
     return response()->json($conversations);
 }
+
 
     
     
